@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -14,7 +15,7 @@ public class LibraryManager {
 	int rid=1000;
 	ArrayList<Book>books=new ArrayList<>();
 	ArrayList<Reader>readers=new ArrayList<>();
-	    
+	ArrayList<Rental>rentals=new ArrayList<>();    
     // R1: Readers and Books 
     
     /**
@@ -124,7 +125,21 @@ public class LibraryManager {
 	 * @throws LibException  an exception if the book is not present in the archive
 	 */
     public String getAvailableBook(String bookTitle) throws LibException {
-        return null;
+    	int tfound =0;
+    	for (Book b :books) {
+    		if(b.getTitle().equals(bookTitle)) {tfound=1;}
+    	}
+    	if(tfound==0) {throw new LibException("title not found");}
+    	
+    	
+    	Optional<Integer> B = books.stream().filter(b->b.getTitle().equals(bookTitle))
+    			.map(Book :: getId).sorted().findFirst();
+    	
+    	if (B==null) {return "Not available";}
+    	else {return B+"";}
+    			
+    			
+    	
     }   
 
     /**
@@ -137,7 +152,9 @@ public class LibraryManager {
 	 * if the reader is already renting a book, or if the book copy is already rented
 	 */
 	public void startRental(String bookID, String readerID, String startingDate) throws LibException {
-    }
+    
+	
+	}
     
 	/**
 	 * Ends a rental of a specific book copy for a specific reader
