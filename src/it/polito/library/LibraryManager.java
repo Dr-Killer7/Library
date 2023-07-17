@@ -152,7 +152,27 @@ public class LibraryManager {
 	 * if the reader is already renting a book, or if the book copy is already rented
 	 */
 	public void startRental(String bookID, String readerID, String startingDate) throws LibException {
+    int rfound=0;
+    int bfound=0;
     
+    
+    
+	for (Book b :books) {
+		if( (b.getId()+"").equals(bookID)) {bfound=1;}
+	}
+	
+	if(bfound==0) {throw new LibException("title not found");}
+	
+	for (Reader r :readers) {
+		if((r.getId()+"").equals(readerID)) {rfound=1;}
+	}
+	
+	if(rfound==0) {throw new LibException("title not found"); }
+	
+	for(Rental r : rentals) {
+		if((r.getBook()+"").equals(bookID) && r.getReader()+"").equals(bookID))
+	}
+	
 	
 	}
     
