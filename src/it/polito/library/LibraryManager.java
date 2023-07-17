@@ -1,11 +1,19 @@
 package it.polito.library;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 
 public class LibraryManager {
+	int cid=1000;
+	int rid=1000;
+	ArrayList<Book>books=new ArrayList<>();
+	ArrayList<Reader>readers=new ArrayList<>();
 	    
     // R1: Readers and Books 
     
@@ -19,8 +27,19 @@ public class LibraryManager {
 	 * @return the ID of the book added 
 	 */
     public String addBook(String title) {
-        return null;
+    	Book c= new Book(title,cid); 
+    for (Book b : books) {
+    	if (b.getTitle().equals(title)     ) b.icount();
+    	
     }
+    books.add(c);
+    String s = cid+"" ;
+    cid++;
+        return s ;
+    }
+    
+    
+    
     
     /**
 	 * Returns the book titles available in the library
@@ -29,8 +48,22 @@ public class LibraryManager {
 	 * 
 	 * @return a map of the titles liked to the number of available copies
 	 */
-    public SortedMap<String, Integer> getTitles() {    	
-        return null;
+    public SortedMap<String, Integer> getTitles() {
+    	ArrayList<Book> a = books ;
+    	Collections.sort(a);
+    	
+    	HashSet <String> h= new HashSet<>();
+    	for (Book  b : books )h.add(b.getTitle());
+    	
+    	
+    	TreeMap<String,Integer> t = new TreeMap<>();
+    	for (String s :h) {
+    		for (Book b : books) {
+    			if (b.getTitle().equals(s)) {t.put(s, b.getCount());}
+    		}
+    	}
+    	
+        return t;
     }
     
     /**
@@ -38,8 +71,13 @@ public class LibraryManager {
 	 * 
 	 * @return a set of the titles liked to the number of available copies
 	 */
-    public Set<String> getBooks() {    	    	
-        return null;
+    public Set<String> getBooks() { 
+    	HashSet<String> h = new HashSet<>();
+    	for (Book b : books) {
+    		h.add(b.getId()+"");
+    	}
+    	
+        return h;
     }
     
     /**
@@ -49,6 +87,11 @@ public class LibraryManager {
 	 * @param surname last name of the reader
 	 */
     public void addReader(String name, String surname) {
+    	Reader r = new Reader(name,surname,rid);
+    	readers.add(r);
+    	
+    	rid++;
+    	
     }
     
     
@@ -60,7 +103,13 @@ public class LibraryManager {
 	 * @throws LibException if the readerID is not present in the archive
 	 */
     public String getReaderName(String readerID) throws LibException {
-        return null;
+    	int i = Integer.parseInt(readerID);
+    	
+    	for (Reader b : readers ) {if (b.getId()==i) 
+    	{ return b.getName()+" "+b.getSurname();}	
+    	}
+    	
+        throw new LibException("reader does not exist");
     }    
     
     
