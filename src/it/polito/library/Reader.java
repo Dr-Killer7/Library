@@ -6,6 +6,10 @@ public class Reader {
 	private String name ;
 	private String surname;
 	private int id;
+	private int rents=0;
+	private int count=0;
+	
+	
 	
 	
 	
@@ -45,7 +49,17 @@ public class Reader {
 	public void setId(int id) {
 		this.id = id;
 	}
-
+	public int getRents() {
+		return rents;
+	}
+	public void setRents(int rents) {
+		this.rents = rents;
+	}
+	public void icount() {count++;}
+	public int getCount() {
+		return count;
+	}
+	
 	
 	
 	

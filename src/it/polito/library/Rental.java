@@ -8,6 +8,7 @@ public class Rental {
 	private int reader;
 	private String date;
 	private String[] dmy = new String[3];
+	private String endDate="ONGOING";
 	
 	
 	
@@ -41,6 +42,12 @@ public class Rental {
 	}
 	public void setDate(String date) {
 		this.date = date;
+	}
+	public String getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
 	}
 	
 

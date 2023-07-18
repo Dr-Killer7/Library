@@ -2,12 +2,14 @@ package it.polito.library;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 
 public class LibraryManager {
@@ -29,14 +31,14 @@ public class LibraryManager {
 	 */
     public String addBook(String title) {
     	Book c= new Book(title,cid); 
-    for (Book b : books) {
-    	if (b.getTitle().equals(title)     ) b.icount();
-    	
-    }
-    books.add(c);
-    String s = cid+"" ;
-    cid++;
-        return s ;
+        for (Book b : books) {
+        	if (b.getTitle().equals(title)     ) b.icount();
+        	c.setCount(b.getCount());
+        }
+        books.add(c);
+        String s = cid+"" ;
+        cid++;
+            return s ;
     }
     
     
@@ -132,11 +134,11 @@ public class LibraryManager {
     	if(tfound==0) {throw new LibException("title not found");}
     	
     	
-    	Optional<Integer> B = books.stream().filter(b->b.getTitle().equals(bookTitle))
-    			.map(Book :: getId).sorted().findFirst();
-    	
-    	if (B==null) {return "Not available";}
-    	else {return B+"";}
+    	int B = books.stream().filter(b->b.getTitle().equals(bookTitle)).filter(b->b.getAvailable()==1)
+    			.map(Book :: getId).sorted().findFirst().orElse(0);
+ 
+    	if (B==0) {return "Not available";}
+    	else{return B+"";}
     			
     			
     	
@@ -168,10 +170,21 @@ public class LibraryManager {
 	}
 	
 	if(rfound==0) {throw new LibException("title not found"); }
+	Book book = books.stream().filter(e->e.getId()==Integer.parseInt(bookID)).findFirst().orElse(null);
+	Reader reader  = readers.stream().filter(e->e.getId()==Integer.parseInt(readerID)).findFirst().orElse(null);
 	
 	for(Rental r : rentals) {
-		if((r.getBook()+"").equals(bookID) && r.getReader()+"").equals(bookID))
+		if((r.getBook()+"").equals(bookID) ) {
+			if((r.getReader()+"").equals(readerID)){r=new Rental( Integer.parseInt(bookID),  Integer.parseInt(readerID),  startingDate);reader.setRents(1);return;}
+		}
 	}
+	if(book.getAvailable()==0||reader.getRents()==1)throw new LibException("abc");
+	for(Book b :books) {if((b.getId()+"").equals(bookID)) {
+		
+	if(b.getAvailable()==1) {for(Reader R :readers) {
+		if(R.getRents()==0&&(R.getId()+"").equals(readerID)) {
+		Rental r = new Rental(Integer.parseInt(bookID),  Integer.parseInt(readerID),  startingDate);b.setAvailable(0);R.setRents(1);b.ircount();R.icount(); rentals.add(r);
+	}}}}};
 	
 	
 	}
@@ -186,6 +199,18 @@ public class LibraryManager {
 	 * if the reader is not renting a book, or if the book copy is not rented
 	 */
     public void endRental(String bookID, String readerID, String endingDate) throws LibException {
+    	int bid=Integer.parseInt(bookID),rid=Integer.parseInt(readerID);
+    	if(bid!=books.stream().filter(e->e.getId()==bid).map(e->e.getId()).findFirst().orElse(0))throw new LibException("abc");
+    	if(rid!=readers.stream().filter(e->e.getId()==rid).map(e->e.getId()).findFirst().orElse(0))throw new LibException("abc");
+    	int B=Integer.parseInt(bookID); int R =Integer.parseInt(readerID);
+    	Book b = books.stream().filter(e->e.getId()==B).findFirst().orElse(null);
+    	Reader r  = readers.stream().filter(e->e.getId()==R).findFirst().orElse(null);
+    	if(r==null)throw new LibException("abc");
+    	if(r.getRents()==0)throw new LibException("abc");
+    	Rental rental = rentals.stream().filter(e->e.getBook()==B).filter(e->e.getReader()==R).findFirst().orElse(null);
+    	if(rental==null||r.getRents()==0) {throw new LibException("error");}
+    	rental.setEndDate(endingDate);b.setAvailable(1);r.setRents(0);
+    	
     }
     
     
@@ -199,7 +224,13 @@ public class LibraryManager {
 	* if the reader is not renting a book, or if the book copy is not rented
 	*/
     public SortedMap<String, String> getRentals(String bookID) throws LibException {
-        return null;
+    	int bid=Integer.parseInt(bookID);
+    	if(bid!=books.stream().filter(e->e.getId()==bid).map(e->e.getId()).findFirst().orElse(0))throw new LibException("abc");
+    	ArrayList<Rental> a = new ArrayList<>();
+    	a=(ArrayList<Rental>) rentals.stream().filter(e->e.getBook()==Integer.parseInt(bookID)).collect(Collectors.toList());
+    	SortedMap<String, String> s =  new TreeMap<String, String>();
+    	for(Rental r :a) {s.put(r.getReader()+"", r.getDate()+" "+r.getEndDate());}
+        return s;
     }
     
     
@@ -211,6 +242,7 @@ public class LibraryManager {
 	* @param donatedTitles It takes in input book titles in the format "First title,Second title"
 	*/
     public void receiveDonation(String donatedTitles) {
+    	String[] dbooks = donatedTitles.split(","); for(String s :dbooks) {addBook(s);}
     }
     
     // R4: Archive Management
@@ -222,7 +254,10 @@ public class LibraryManager {
 
 	*/
     public Map<String, String> getOngoingRentals() {
-        return null;
+    	TreeMap<String, String> m =new TreeMap<>();
+    	List<Rental> l =rentals.stream().filter(r->r.getEndDate().equals("ONGOING")).collect(Collectors.toList());
+    	for (Rental r : l)m.put(r.getReader()+"", r.getBook()+"");
+        return m;
     }
     
     /**
@@ -230,8 +265,11 @@ public class LibraryManager {
 	* 
 	*/
     public void removeBooks() {
+    	List<Book> weli= books.stream().filter(b->b.getRcount()==0).collect(Collectors.toList());
+    	for(Book b:weli)books.remove(b);
     }
     	
+    
     // R5: Stats
     
     /**
@@ -241,7 +279,8 @@ public class LibraryManager {
 	* @return the uniqueID of the reader with the highest number of rentals
 	*/
     public String findBookWorm() {
-        return null;
+    	int r = readers.stream().max(Comparator.comparingInt(reader -> reader.getCount())).map(Reader::getId).orElse(null);
+        return r+"";
     }
     
     /**
@@ -250,7 +289,13 @@ public class LibraryManager {
 	* @return the map linking a title with the number of rentals
 	*/
     public Map<String,Integer> rentalCounts() {
-        return null;
+    	TreeMap<String,Integer> t = new TreeMap<>();
+    	for (Book b:books) {
+    		if(t.containsKey(b.getTitle())){
+    			t.replace(b.getTitle(), t.get(b.getTitle())+b.getRcount()); }
+    		else t.put(b.getTitle(), b.getRcount());
+    	}
+        return t;
     }
 
 }

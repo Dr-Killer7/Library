@@ -4,7 +4,20 @@ public class Book implements Comparable<Book>{
 	
 	private String title;
 	private int id;
-	private int count;
+	private int count=1;
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+
+
+
+
+
+
+	private int rcount=0;
+	private int available =1;
+
 	
 	
 	public Book(String title, int id) {
@@ -20,6 +33,7 @@ public class Book implements Comparable<Book>{
 	
 	
 	public void icount() {count++;}
+	public void ircount() {rcount++;}
 	
 	
 	
@@ -38,7 +52,7 @@ public class Book implements Comparable<Book>{
 	public int getId() {
 		return id;}
 	
-		public int getCount() {
+	public int getCount() {
 			return count;
 	}
 	public void setId(int id) {
@@ -55,6 +69,36 @@ public class Book implements Comparable<Book>{
 	public int compareTo(Book o) {
 		
 		return  title.compareTo(o.title);
+	}
+
+
+
+
+
+
+
+	public int getAvailable() {
+		return available;
+	}
+
+
+
+
+
+
+
+	public void setAvailable(int available) {
+		this.available = available;
+	}
+
+
+
+
+
+
+
+	public int getRcount() {
+		return rcount;
 	}
 
 }
