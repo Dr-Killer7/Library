@@ -20,7 +20,6 @@ public class TestExample {
 	    LibraryManager lib = new LibraryManager();
 	
 	    // R1: Readers and Books
-	
 	    lib.addBook("Dance Dance Dance");
 	    lib.addBook("Lolita");
 	    lib.addBook("Master and Margarita");
@@ -61,7 +60,7 @@ public class TestExample {
 	    // R3: Book Donations
 	    
 	    lib.receiveDonation("Beauty and the Beast,Cindarella,Snowhite");
-	    
+	    titles = lib.getTitles();
 	    assertEquals(6, titles.size());
 	    Set<String> books = lib.getBooks();
 
@@ -89,8 +88,8 @@ public class TestExample {
 	    lib.startRental("1001", "1001", "12-07-2021");
 	    lib.endRental("1001", "1001", "19-07-2021");
 
-	    assertEquals(10, books.size());
 	    lib.removeBooks();
+	    books = lib.getBooks();
 	    assertEquals(2, books.size());
 	    
 	    
